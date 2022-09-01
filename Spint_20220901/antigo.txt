@@ -1,0 +1,172 @@
+import java.util.Scanner;
+
+import ABBs.ABB_pessoa_fisica;
+import ABBs.ABB_pessoa_juridica;
+import Tipos_conta.Cliente;
+import Tipos_conta.Tipo_de_Conta;
+import lista_clientes_oferta.ListaClienteOferta;
+
+public class DivulgaOfertas {
+
+	public static void main(String[] args) {
+
+		Scanner le = new Scanner(System.in);
+
+		/*
+		 * Cria a uma árvore de busca binária para cada tipo de conta (pessoa física ou
+		 * jurídica)
+		 */
+		ABB_pessoa_fisica abb_fisica = new ABB_pessoa_fisica();
+		ABB_pessoa_juridica abb_juridica = new ABB_pessoa_juridica();
+
+		int opcao, op, numeroConta;
+		String nome, cpfCnpj;
+		Tipo_de_Conta tipoConta = null;
+		double saldo;
+
+		do {
+			System.out.println("\n 0 - Encerrar o programa");
+			System.out.println(" 1 - Inscrição cliente");
+			System.out.println(" 2 - Oferta de novo serviço e/ou aplicação");
+			System.out.print(" Digite: ");
+			opcao = le.nextInt();
+
+			switch (opcao) {
+			case 1:
+				System.out.print("\n----------- INSCRIÇÃO DE CLIENTE -----------");
+
+				System.out.print("\nDigite nome: ");
+				nome = le.next();
+
+				System.out.print("Digite cpf/cnpj: ");
+				cpfCnpj = le.next();
+
+				System.out.print("Digite número da conta: ");
+				numeroConta = le.nextInt();
+
+				System.out.print("Informe saldo em aplicações R$: ");
+				saldo = le.nextDouble();
+
+				do {
+					System.out.print("Digite\n");
+					System.out.print("      1 - Pessoa Física \n");
+					System.out.print("      2 - Pessoa Jurídica \n");
+					System.out.print("Opção: ");
+					op = le.nextInt();
+					switch (op) {
+					case 1:
+						tipoConta = Tipo_de_Conta.PESSOA_FISICA;
+
+						// Intancia um objeto da classe Cliente e insere na ABB correspondente a tipo de
+						// conta
+						Cliente cliente_fisico = new Cliente(nome, cpfCnpj, numeroConta, tipoConta, saldo);
+						abb_fisica.root = abb_fisica.inserir(abb_fisica.root, cliente_fisico);
+						break;
+					case 2:
+						tipoConta = Tipo_de_Conta.PESSOA_JURIDICA;
+
+						// Intancia um objeto da classe Cliente e insere na ABB correspondente a tipo de
+						// conta
+						Cliente cliente_juridico = new Cliente(nome, cpfCnpj, numeroConta, tipoConta, saldo);
+						abb_juridica.root = abb_juridica.inserir(abb_juridica.root, cliente_juridico);
+						break;
+					default:
+						System.out.println("Opção inválida ");
+						op = -1;
+					}
+
+				} while (op == -1);
+
+				System.out.print("----------------------------------------------\n");
+
+				break;
+			case 2:
+				System.out.print("\nQual o valor de saldo mínimo exigido: R$ ");
+				saldo = le.nextDouble();
+
+				System.out.print("\nQual tipo de conta a oferta se destina?  ");
+				do {
+					System.out.print("\n      1 - Pessoa Física \n");
+					System.out.print("      2 - Pessoa Jurídica \n");
+					System.out.print("Opção: ");
+					op = le.nextInt();
+					switch (op) {
+					case 1:
+						/*
+						 * Fazendo uso de um método da classe ABB, desenvolvido para este problema, uma
+						 * lista de clientes aptos para a oferta é gerada. Nesse trecho de programa que
+						 * tentar fazer o contato com todos os clientes presente na lista.
+						 */
+
+						tipoConta = Tipo_de_Conta.PESSOA_FISICA;
+
+						break;
+					case 2:
+						tipoConta = Tipo_de_Conta.PESSOA_JURIDICA;
+
+						/*
+						 * Fazendo uso de um método da classe ABB, desenvolvido para este problema, uma
+						 * lista de clientes aptos para a oferta é gerada. Nesse trecho de programa que
+						 * tentar fazer o contato com todos os clientes presente na lista.
+						 */
+						ListaClienteOferta lista_juridica = abb_juridica.listaAptosParaOferta(abb_juridica.root, saldo);
+						lista_juridica.showClientes();
+
+						break;
+					default:
+						System.out.println("Opção inválida ");
+						op = -1;
+					}
+
+				} while (op == -1);
+
+				if (tipoConta.equals(Tipo_de_Conta.PESSOA_FISICA)) {
+					ListaClienteOferta lista = abb_fisica.gerarListaCliente(abb_fisica.root, saldo);
+					lista.showClientes();
+					
+					if(lista.isEmpty()) {
+						System.out.println("OXENTEEEEEEEEEEEEEEEEE");
+					}
+
+					while (!lista.isEmpty()) {
+						Cliente cliente = lista.dequeueMaiorSaldo();
+						System.out.println("Cliente com maior saldo: " + cliente);
+						System.out.println("Deseja aceitar a oferta? (S/N)");
+						String escolha = le.next();
+
+						if (escolha.equalsIgnoreCase("S")) {
+							System.out.println("Oferta aceita pelo cliente");
+							abb_fisica.root = abb_fisica.removeValor(abb_fisica.root, cliente);
+						} else if (escolha.equalsIgnoreCase("N")) {
+							System.out.println("Oferta negada pelo cliente");
+						} else {
+							System.out.println("Opção inválida");
+						}
+					}
+				}
+
+				break;
+
+			}
+		} while (opcao != 0);
+
+		System.out.println("\nClientes que não aceitaram ou não estavam adequados para a oferta!");
+
+		/*
+		 * Esvazia as ABBs apresentando todos os clientes que aguardam nova oportunidade
+		 */
+
+		System.out.println("----------- PESSOA FISICA -------------");
+		while (abb_fisica.root != null) {
+			abb_fisica.root = abb_fisica.esvazia(abb_fisica.root);
+		}
+
+		System.out.println("\n----------- PESSOA JURIDICA -------------");
+		while (abb_juridica.root != null) {
+			abb_juridica.root = abb_juridica.esvazia(abb_juridica.root);
+		}
+
+		le.close();
+
+	}
+}
