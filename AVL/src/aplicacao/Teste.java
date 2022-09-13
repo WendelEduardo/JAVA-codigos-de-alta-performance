@@ -2,40 +2,38 @@ package aplicacao;
 
 import java.util.Scanner;
 
-import static javax.swing.JOptionPane.*;
-
 import arvores.AVLint;
 
 public class Teste {
+
 	public static void main(String[] args) {
-
 		AVLint tree = new AVLint();
-		Scanner entrada = new Scanner(System.in);
-
+		Scanner le = new Scanner(System.in);
 		int opcao;
-
 		do {
-			opcao = Integer.parseInt(showInputDialog(null, "0 - Sair\n1 - Inserir\n2 - Mostrar dados da AVL"));
-
+			System.out.println(" 0 - Sair");
+			System.out.println(" 1 - Inserir");
+			System.out.println(" 2 - Mostra o Fator de Balanceamento de cada nó");
+			opcao = le.nextInt();
 			switch (opcao) {
 			case 0:
-				showMessageDialog(null, "Finalizado o programa!");
+				System.out.println(" Finalizado  o programa");
 				break;
 			case 1:
-				int info = Integer.parseInt(showInputDialog("Informe o valor a ser inserido: "));
+				System.out.print(" Informe valor a ser inserido: ");
+				int info = le.nextInt();
 				tree.root = tree.inserirH(tree.root, info);
 				break;
-
 			case 2:
+				System.out.println("\n ******** Fator de Balanceamento dos nós da AVL ********");
 				tree.mostraFB(tree.root);
 				break;
-
 			default:
-				showMessageDialog(null, "OpÃ§Ã£o invÃ¡lida!");
+				System.out.println(" Opção inválida");
 			}
-
 		} while (opcao != 0);
+		le.close();
 
-		entrada.close();
 	}
+
 }
